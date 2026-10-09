@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BellyWell Admin — Dashboard kurir, label request kitchen, dan label nutrition facts & pengiriman.">
+  <meta name="theme-color" content="#0B3B24">
+  <title>BellyWell Admin — Dashboard Kurir & Label</title>
+  <link rel="stylesheet" href="admin.css?v=1">
+  <link rel="icon" href="logo.png">
+</head>
+<body>
+<div id="admin-login-overlay" style="position:fixed;inset:0;background:#f0fdf4;z-index:99999;display:flex;align-items:center;justify-content:center;">
+  <div style="background:white;padding:40px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.05);width:100%;max-width:380px;text-align:center;">
+    <img src="logo.png" style="height:120px;margin-bottom:20px;object-fit:contain;">
+    <h2 style="margin:0 0 20px;color:#064e3b;">Admin Panel</h2>
+    <div style="text-align:left;margin-bottom:15px;">
+      <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#475569;">Username</label>
+      <input id="admin-user" type="text" style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:8px;font-size:15px;" placeholder="admin">
+    </div>
+    <div style="text-align:left;margin-bottom:24px;">
+      <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#475569;">Password</label>
+      <input id="admin-pass" type="password" style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:8px;font-size:15px;" placeholder="admin123" onkeydown="if(event.key==='Enter') doAdminLogin()">
+    </div>
+    <button onclick="doAdminLogin()" style="width:100%;padding:14px;background:#16a34a;color:white;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.2s;">Masuk</button>
+    <a href="index.html" style="display:block;margin-top:20px;font-size:14px;color:#16a34a;text-decoration:none;">← Ke Portal Customer</a>
+  </div>
+</div>
+<script>
+  if (sessionStorage.getItem('bw_admin_logged') === '1') {
+    document.getElementById('admin-login-overlay').style.display = 'none';
+  }
+  function doAdminLogin() {
+    const u = document.getElementById('admin-user').value;
+    const p = document.getElementById('admin-pass').value;
+    // Hardcode credential sementara
+    if (u === 'admin' && p === 'admin123') {
+      sessionStorage.setItem('bw_admin_logged', '1');
+      document.getElementById('admin-login-overlay').style.display = 'none';
+      document.getElementById('admin-pass').value = '';
+    } else {
+      alert('Username atau password salah! (Coba: admin / admin123)');
+    }
+  }
+  function doAdminLogout() {
+    sessionStorage.removeItem('bw_admin_logged');
+    document.getElementById('admin-login-overlay').style.display = 'flex';
+  }
+</script>
+
+<div class="admin">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo"><img src="logo.png" alt="BellyWell"></div>
+      <div><h1>BellyWell</h1><small>Admin Panel</small></div>
+    </div>
+
+    <div class="nav-label">Operasional</div>
+    <button class="nav-item active" id="nav-kurir" data-view="kurir" onclick="goView('kurir')"><span class="ni">🛵</span><span>Dashboard</span><span class="count" id="cnt-kurir">0</span></button>
+    <button class="nav-item" id="nav-request" data-view="request" onclick="goView('request')"><span class="ni">🏷️</span><span>Label Request</span><span class="count" id="cnt-request">0</span></button>
+    <button class="nav-item" id="nav-nutrition" data-view="nutrition" onclick="goView('nutrition')"><span class="ni">🧾</span><span>Nutrition & Pengiriman</span></button>
+
+    <div class="nav-label">Database</div>
+    <button class="nav-item" id="nav-customers" data-view="customers" onclick="goView('customers')"><span class="ni">👥</span><span>Customer</span><span class="count" id="cnt-customers">0</span></button>
+    <button class="nav-item" id="nav-menus" data-view="menus" onclick="goView('menus')"><span class="ni">🍱</span><span>Menu & Nutrisi</span></button>
+    <button class="nav-item" id="nav-couriers" data-view="couriers" onclick="goView('couriers')"><span class="ni">🛵</span><span>Kurir</span></button>
+    <button class="nav-item" id="nav-settings" data-view="settings" onclick="goView('settings')"><span class="ni">⚙️</span><span>Pengaturan & Print</span></button>
+
+    <div class="sidebar-foot">
+      <div class="auto-chip" id="auto-chip" style="margin-bottom: 15px;"><span class="pulse"></span><span class="txt" id="auto-chip-txt">Auto print: off</span></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:15px;padding-top:15px;border-top:1px solid rgba(255,255,255,0.1);">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:18px;">👨‍💼</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;color:white;line-height:1.2">Super Admin</div>
+          <div style="font-size:11px;color:#a7f3d0;margin-top:2px;">admin@bellywell.id</div>
+        </div>
+      </div>
+      <button onclick="doAdminLogout()" style="width:100%;padding:10px;background:rgba(255,255,255,0.1);color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+        <span>🚪</span> Keluar (Logout)
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h2 id="view-title">Dashboard</h2>
+        <div class="sub" id="view-sub">Daftar pengiriman harian</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="date-nav" id="date-nav">
+        <button onclick="shiftDate(-1)" title="Hari sebelumnya" id="btn-prev-day">‹</button>
+        <input type="date" id="inp-date" onchange="setDate(this.value)">
+        <button onclick="shiftDate(1)" title="Hari berikutnya" id="btn-next-day">›</button>
+        <button class="today-btn" onclick="setDate(todayStr())" id="btn-today">Hari ini</button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ===== VIEW: KURIR ===== -->
+      <section class="view active" id="view-kurir">
+        <div class="stats" id="stats"></div>
+        <div class="kurir-strip" id="kurir-strip"></div>
+
+        <div class="toolbar">
+          <label class="search"><span>🔍</span><input id="q-kurir" placeholder="Cari nama, alamat, telepon…" oninput="renderKurir()"></label>
+          <select class="select" id="f-meal" onchange="renderKurir()">
+            <option value="all">Semua Meal</option><option value="lunch">☀️ Lunch</option><option value="dinner">🌙 Dinner</option>
+          </select>
+          <select class="select" id="f-cat" onchange="renderKurir()"></select>
+          <select class="select" id="f-kurir" onchange="renderKurir()"></select>
+          <select class="select" id="f-status" onchange="renderKurir()">
+            <option value="all">Semua Status</option><option value="pending">Belum Kirim</option><option value="otw">Dalam Perjalanan</option><option value="delivered">Terkirim</option><option value="failed">Gagal</option>
+          </select>
+          <div class="grow"></div>
+          <button class="btn btn-primary" id="btn-add-order" onclick="openOrderModal()">＋ Tambah Order</button>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>Daftar Pengiriman</h3>
+            <span class="muted" id="sel-info">0 dipilih</span>
+            <div class="grow" style="flex:1"></div>
+            <button class="btn btn-ghost btn-sm" id="btn-print-manifest" onclick="printManifest()">🖨️ Manifest Kurir</button>
+            <button class="btn btn-yellow btn-sm" id="btn-print-request-k" onclick="printRequest(true)">🏷️ Print Label Request</button>
+            <button class="btn btn-dark btn-sm" id="btn-print-ship-k" onclick="printShipping(true)">🧾 Print Nutrition + Pengiriman</button>
+            <button class="btn btn-danger btn-sm hide" id="btn-bulk-del" onclick="bulkDelete()">🗑 Hapus</button>
+          </div>
+          <div class="table-wrap">
+            <table class="tbl excel" id="tbl-kurir">
+              <thead><tr>
+                <th class="c"><input type="checkbox" class="cb" id="chk-all" onchange="toggleAll(this.checked)"></th>
+                <th>Category</th><th>Name</th><th>Menu / Request</th><th class="c">Total Box</th><th>Address</th>
+                <th>Kecamatan</th><th>Kota</th><th>Phone</th><th>Kurir</th><th>Status</th><th></th>
+              </tr></thead>
+              <tbody id="tb-kurir"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== VIEW: REQUEST ===== -->
+      <section class="view" id="view-request">
+        <div class="toolbar">
+          <select class="select" id="rf-meal" onchange="renderRequest()">
+            <option value="all">Lunch + Dinner</option><option value="lunch">☀️ Lunch saja</option><option value="dinner">🌙 Dinner saja</option>
+          </select>
+          <select class="select" id="rf-only" onchange="renderRequest()">
+            <option value="req">Hanya yang ada request</option><option value="all">Semua box</option>
+          </select>
+          <div class="legend">
+            <span><i style="background:var(--hl-yellow)"></i>Umum</span>
+            <span><i style="background:var(--hl-cyan)"></i>Protein / Ikan</span>
+            <span><i style="background:var(--hl-red)"></i>Replace</span>
+            <span><i style="background:var(--hl-gray)"></i>Nasi / Karbo</span>
+            <span><i style="background:var(--hl-green)"></i><i style="background:var(--hl-pink)"></i>Custom</span>
+          </div>
+          <div class="grow"></div>
+          <button class="btn btn-ghost" id="btn-copy-all" onclick="copyAllRequests()">📋 Copy Semua</button>
+          <button class="btn btn-yellow" id="btn-print-request" onclick="printRequest()">🖨️ Print Label Request</button>
+        </div>
+        <div class="label-board"><div class="label-grid" id="grid-request"></div></div>
+      </section>
+
+      <!-- ===== VIEW: NUTRITION ===== -->
+      <section class="view" id="view-nutrition">
+        <div id="nf-warn"></div>
+        <div class="toolbar">
+          <select class="select" id="nf-meal" onchange="renderNutrition()">
+            <option value="all">Lunch + Dinner</option><option value="lunch">☀️ Lunch saja</option><option value="dinner">🌙 Dinner saja</option>
+          </select>
+          <select class="select" id="nf-kurir" onchange="renderNutrition()"></select>
+          <span class="muted" style="font-size:12.5px;color:var(--muted)" id="nf-count"></span>
+          <div class="grow"></div>
+          <button class="btn btn-ghost" id="btn-goto-menu" onclick="goView('menus')">🍱 Kelola Menu</button>
+          <button class="btn btn-dark" id="btn-print-ship" onclick="printShipping()">🖨️ Print Nutrition + Pengiriman</button>
+        </div>
+        <div class="label-board"><div class="label-grid" id="grid-nutrition"></div></div>
+      </section>
+
+      <!-- ===== VIEW: CUSTOMERS ===== -->
+      <section class="view" id="view-customers">
+        <div class="toolbar">
+          <label class="search"><span>🔍</span><input id="q-cust" placeholder="Cari customer…" oninput="renderCustomers()"></label>
+          <div class="grow"></div>
+          <button class="btn btn-primary" id="btn-add-cust" onclick="openCustomerModal()">＋ Tambah Customer</button>
+        </div>
+        <div class="card"><div class="table-wrap">
+          <table class="tbl"><thead><tr><th>Nama</th><th>Login Portal</th><th>Phone</th><th>Alamat</th><th>Kecamatan</th><th>Kota</th><th>Catatan</th><th class="c">Order</th><th></th></tr></thead>
+          <tbody id="tb-cust"></tbody></table>
+        </div></div>
+      </section>
+
+      <!-- ===== VIEW: MENUS ===== -->
+      <section class="view" id="view-menus">
+        <div class="toolbar">
+          <select class="select" id="mf-scope" onchange="renderMenus()">
+            <option value="day">Menu tanggal terpilih</option><option value="all">Semua menu</option>
+          </select>
+          <div class="grow"></div>
+          <button class="btn btn-ghost" id="btn-copy-menu" onclick="copyMenusFromPrev()">📄 Salin dari hari sebelumnya</button>
+          <button class="btn btn-primary" id="btn-add-menu" onclick="openMenuModal()">＋ Tambah Menu</button>
+        </div>
+        <div class="card"><div class="table-wrap">
+          <table class="tbl"><thead><tr><th>Tanggal</th><th>Meal</th><th>Kategori</th><th>Nama Menu</th><th class="c">Calories</th><th class="c">Protein</th><th class="c">Carbs</th><th class="c">Fat</th><th></th></tr></thead>
+          <tbody id="tb-menu"></tbody></table>
+        </div></div>
+      </section>
+
+      <!-- ===== VIEW: COURIERS ===== -->
+      <section class="view" id="view-couriers">
+        <div class="toolbar">
+          <div class="grow"></div>
+          <button class="btn btn-primary" id="btn-add-courier" onclick="openCourierModal()">＋ Tambah Kurir</button>
+        </div>
+        <div class="card"><div class="table-wrap">
+          <table class="tbl"><thead><tr><th>Nama Kurir</th><th>Phone</th><th>Area</th><th class="c">Tugas Hari Ini</th><th></th></tr></thead>
+          <tbody id="tb-courier"></tbody></table>
+        </div></div>
+      </section>
+
+      <!-- ===== VIEW: SETTINGS ===== -->
+      <section class="view" id="view-settings">
+        <div class="settings-grid">
+          <div class="card">
+            <h3>🖨️ Print Otomatis</h3>
+            <div class="toggle-line">
+              <div><h4>Print otomatis saat order disimpan</h4><p>Langsung buka dialog print label untuk order yang baru ditambah / diedit.</p></div>
+              <select class="select" id="set-autosave" onchange="saveSetting('autoPrintOnSave', this.value)">
+                <option value="none">Mati</option><option value="request">Label Request</option><option value="shipping">Nutrition + Pengiriman</option><option value="both">Keduanya</option>
+              </select>
+            </div>
+            <div class="toggle-line">
+              <div><h4>Jadwal print harian</h4><p>Setiap hari pada jam ini, semua label untuk tanggal pengiriman <b>besok</b> otomatis dicetak (halaman admin harus terbuka).</p></div>
+              <label class="switch"><input type="checkbox" id="set-sched-on" onchange="saveSetting('schedOn', this.checked)"><span></span></label>
+            </div>
+            <div class="toggle-line">
+              <div><h4>Jam print</h4><p>Urutan: Label Request → Nutrition + Pengiriman.</p></div>
+              <input type="time" class="inp" style="width:130px" id="set-sched-time" onchange="saveSetting('schedTime', this.value)">
+            </div>
+            <div class="toggle-line">
+              <div><h4>Kolom label per baris</h4><p>Sesuaikan dengan kertas label (default 3 kolom, A4).</p></div>
+              <select class="select" id="set-cols" onchange="saveSetting('cols', +this.value)"><option value="2">2 kolom</option><option value="3">3 kolom</option><option value="4">4 kolom</option></select>
+            </div>
+            <div class="toggle-line">
+              <div><h4>Tes print sekarang</h4><p>Cetak semua label untuk tanggal yang sedang dipilih.</p></div>
+              <button class="btn btn-ghost btn-sm" id="btn-test-print" onclick="runAutoPrint(state.date)">▶ Jalankan</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>🏷️ Kategori Paket</h3>
+            <p style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Warna dipakai di kolom CATEGORY dashboard kurir.</p>
+            <table class="tbl"><thead><tr><th>Nama</th><th>Singkatan</th><th>Warna</th><th></th></tr></thead><tbody id="tb-cat"></tbody></table>
+            <div style="padding:12px 0"><button class="btn btn-ghost btn-sm" id="btn-add-cat" onclick="openCategoryModal()">＋ Tambah Kategori</button></div>
+          </div>
+
+          <div class="card">
+            <h3>💾 Backup Data</h3>
+            <div class="toggle-line"><div><h4>Export data (JSON)</h4><p>Simpan seluruh database ke file.</p></div><button class="btn btn-ghost btn-sm" id="btn-export" onclick="exportData()">⬇ Export</button></div>
+            <div class="toggle-line"><div><h4>Import data</h4><p>Pulihkan dari file backup.</p></div><label class="btn btn-ghost btn-sm" id="btn-import">⬆ Import<input type="file" accept=".json" hidden onchange="importData(this)"></label></div>
+            <div class="toggle-line"><div><h4>Export CSV pengiriman</h4><p>Data kurir tanggal terpilih, bisa dibuka di Excel.</p></div><button class="btn btn-ghost btn-sm" id="btn-csv" onclick="exportCSV()">⬇ CSV</button></div>
+            <div class="toggle-line"><div><h4>Reset ke data contoh</h4><p>Semua data akan diganti.</p></div><button class="btn btn-danger btn-sm" id="btn-reset" onclick="resetData()">Reset</button></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal-bg" onmousedown="if(event.target===this)closeModal()">
+  <div class="modal" id="modal">
+    <div class="modal-head"><h3 id="modal-title">Modal</h3><button class="x" onclick="closeModal()">✕</button></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot" id="modal-foot"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><span class="ti" id="toast-i">✓</span><span id="toast-m"></span></div>
+
+<!-- Print target -->
+<div id="print-area"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="admin.js?v=8"></script>
+<script src="sync.js?v=8"></script>
+</body>
+</html>

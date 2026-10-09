@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="BellyWell - Portal pelanggan katering diet & healthy food.">
+  <meta name="theme-color" content="#16A34A">
+  <title>BellyWell — Customer Portal</title>
+  <link rel="stylesheet" href="index.css?v=2">
+  <link rel="icon" href="logo.png">
+  <script>
+    window.onerror = function(msg, url, line, col, error) {
+      alert("Error: " + msg + "\nLine: " + line + "\nURL: " + url);
+      return false;
+    };
+  </script>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- Toast -->
+  <div class="toast-wrap" id="toast">
+    <div class="toast-inner" id="toast-inner">
+      <span id="toast-icon">✓</span>
+      <span id="toast-msg">Berhasil!</span>
+    </div>
+  </div>
+
+  <!-- ============ LOGIN ============ -->
+  <div class="page active" id="pg-login">
+    <div class="login-page">
+      <div class="login-header">
+        <img src="logo.png" alt="BellyWell Logo" class="login-logo-img">
+        <h1 style="display: none;">BellyWell</h1>
+        <p style="margin-top: 12px; font-weight: 500; color: var(--green-800);">Sehat Terkendali, Nikmati Hidup</p>
+      </div>
+      <div class="login-form">
+        <div class="field">
+          <label class="field-label" for="inp-user">Username</label>
+          <div class="field-icon-wrap">
+            <span class="icon-left">👤</span>
+            <input class="field-input" id="inp-user" placeholder="Masukkan username" value="sarah.wellness" autocomplete="username">
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="inp-pass">Password</label>
+          <div class="field-icon-wrap">
+            <span class="icon-left">🔒</span>
+            <input class="field-input" id="inp-pass" type="password" placeholder="Masukkan password" value="password123" autocomplete="current-password">
+            <button class="icon-right" id="btn-eye" onclick="togglePw()">👁</button>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-full btn-lg" id="btn-login" onclick="doLogin()">Masuk</button>
+        <div class="login-help" style="display: flex; justify-content: center; align-items: center; gap: 12px;">
+          <a href="#" onclick="toast('Hubungi WhatsApp admin: 0812-3456-7890')">Kendala masuk? Hubungi kami</a>
+          <span style="color: var(--gray-300);">•</span>
+          <a href="admin.html">Admin</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DASHBOARD ============ -->
+  <div class="page" id="pg-dash">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background: var(--white); border-bottom: 1px solid var(--gray-100);">
+      <img src="logo.png" alt="BellyWell" style="height: 36px; object-fit: contain;">
+      <div style="display: flex; gap: 8px;">
+        <button class="topnav-btn" onclick="toast('Tidak ada notifikasi baru')">🔔</button>
+        <button class="topnav-btn" onclick="go('pg-profile')">👤</button>
+      </div>
+    </div>
+    <!-- Profile bar -->
+    <div class="dash-profile-bar">
+      <div class="dash-avatar" id="dash-avatar"></div>
+      <div>
+        <div class="name" id="dash-name">Halo! 👋</div>
+        <div class="sub">Semoga harimu menyenangkan</div>
+      </div>
+      <div class="spacer"></div>
+    </div>
+
+    <div class="page-body">
+      <!-- Menu banner -->
+      <div class="menu-banner" onclick="openSheet('sh-menu')">
+        <span class="icon">📋</span>
+        <div class="text">
+          <strong>Lihat Menu Mingguan</strong>
+        </div>
+        <span class="arrow">›</span>
+      </div>
+
+      <!-- Active package -->
+      <div class="pkg-card" id="pkg-card">
+        <div class="pkg-header">
+          <div>
+            <h3 id="pkg-title">Memuat data...</h3>
+            <span class="badge badge-green" style="margin-top:4px" id="pkg-meals"></span>
+          </div>
+          <span class="badge badge-green" id="pkg-status">● Memuat</span>
+        </div>
+        <div class="pkg-progress">
+          <div class="pkg-progress-bar"><div class="pkg-progress-fill" id="pkg-bar" style="width:0%"></div></div>
+          <div class="pkg-progress-label">
+            <span>Progress Pengiriman</span>
+            <strong id="pkg-pct">0/0 (0%)</strong>
+          </div>
+        </div>
+        <div class="pkg-stats">
+          <div class="pkg-stat"><span class="num" id="pkg-delivered">0</span><span class="label">Terkirim</span></div>
+          <div class="pkg-stat"><span class="num" id="pkg-pending">0</span><span class="label">Belum Kirim</span></div>
+          <div class="pkg-stat"><span class="num" id="pkg-hold">0</span><span class="label">Hold</span></div>
+        </div>
+        <div class="pkg-footer">
+          <button class="btn btn-primary btn-full" onclick="go('pg-edit')">✏️ Edit Order</button>
+        </div>
+      </div>
+
+      <!-- Tabs: Ongoing / History -->
+      <div class="tabs" id="dash-tabs">
+        <button class="tab active" data-tab="dash-ongoing" onclick="switchDashTab(this)">Ongoing</button>
+        <button class="tab" data-tab="dash-history" onclick="switchDashTab(this)">History</button>
+      </div>
+
+      <div class="section" id="dash-ongoing">
+        <div class="section-title">📦 Pengiriman Berikutnya</div>
+        <div id="dash-next-delivery">
+          <div class="card" style="display:flex;align-items:center;gap:12px">
+            <div style="flex:1;text-align:center;padding:20px;color:var(--gray-500)">Memuat...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section hide" id="dash-history">
+        <div class="section-title">📦 Riwayat Pesanan</div>
+        <div id="dash-history-list">
+          <!-- History items will be injected here -->
+        </div>
+      </div>
+
+      <!-- Audit Log -->
+      <div class="section">
+        <div class="section-title">📝 Riwayat Perubahan <span class="count" id="audit-count">0</span></div>
+        <div id="dash-audit-list">
+          <div style="text-align:center;padding:20px;color:var(--gray-500);font-size:14px">Belum ada riwayat perubahan</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ EDIT ORDER ============ -->
+  <div class="page" id="pg-edit">
+    <div class="topnav">
+      <button class="topnav-btn" onclick="go('pg-dash')">←</button>
+      <h1>Edit Order</h1>
+      <button class="topnav-btn" onclick="openSheet('sh-audit')">📋</button>
+    </div>
+
+    <div class="page-body edit-body">
+      <!-- Filters -->
+      <div class="filter-section">
+        <div class="chip-row" id="fil-status">
+          <button class="chip active" data-f="all" onclick="setFil(this,'status')">Semua</button>
+          <button class="chip" data-f="pending" onclick="setFil(this,'status')">🟡 Belum Kirim</button>
+          <button class="chip" data-f="delivered" onclick="setFil(this,'status')">🟢 Sudah Kirim</button>
+          <button class="chip" data-f="unscheduled" onclick="setFil(this,'status')">⚪ Belum Jadwal</button>
+        </div>
+        <div class="chip-row" id="fil-meal">
+          <button class="chip active" data-f="all" onclick="setFil(this,'meal')">Semua</button>
+          <button class="chip" data-f="lunch" onclick="setFil(this,'meal')">☀️ Lunch</button>
+          <button class="chip" data-f="dinner" onclick="setFil(this,'meal')">🌙 Dinner</button>
+        </div>
+      </div>
+
+      <!-- Mini Calendar -->
+      <div class="mini-cal">
+        <div class="mini-cal-head">
+          <span>📅 September – Oktober 2026</span>
+        </div>
+        <div class="mini-cal-scroll" id="mini-cal"></div>
+      </div>
+
+      <!-- Select bar -->
+      <div class="select-bar">
+        <label class="checkbox" id="lbl-all">
+          <input type="checkbox" id="chk-all" onchange="toggleAll()">
+          <span class="checkbox-box">✓</span>
+          <span>Pilih Semua</span>
+        </label>
+        <span class="count" id="sel-count">0 dipilih</span>
+      </div>
+
+      <!-- Order cards -->
+      <div class="order-items" id="order-items"></div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="bottom-bar hide" id="bot-bar">
+      <button class="btn btn-primary btn-full btn-lg" id="btn-ubah" onclick="openSheet('sh-actions')">✏️ Ubah Pesanan</button>
+    </div>
+  </div>
+
+  <!-- ============ PROFILE ============ -->
+  <div class="page" id="pg-profile">
+    <div class="topnav">
+      <button class="topnav-btn" onclick="go('pg-dash')">←</button>
+      <h1>Profil Saya</h1>
+      <div style="width:36px"></div>
+    </div>
+    <div class="page-body">
+      <div class="profile-head">
+        <div class="profile-avatar" id="prof-avatar">👩</div>
+        <h2 id="prof-name">Sarah Amelia Putri</h2>
+        <p>Member sejak 2026</p>
+      </div>
+      <div class="section">
+        <div class="profile-row"><div class="pr-icon">👤</div><div><div class="pr-label">Nama Lengkap</div><div class="pr-value" id="prof-fullname">Sarah Amelia Putri</div></div></div>
+        <div class="profile-row"><div class="pr-icon">📱</div><div><div class="pr-label">No. WhatsApp</div><div class="pr-value" id="prof-phone">+62 812-3456-7890</div></div></div>
+        <div class="profile-row"><div class="pr-icon">📍</div><div><div class="pr-label">Alamat Utama</div><div class="pr-value" id="prof-addr">Rumah</div></div></div>
+      </div>
+      <div class="section">
+        <button class="btn btn-danger btn-full" onclick="go('pg-login');toast('Anda telah keluar')">Keluar dari Akun</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ OVERLAY & SHEETS ============ -->
+  <div class="overlay" id="overlay" onclick="closeSheet()"></div>
+
+  <!-- Actions -->
+  <div class="sheet" id="sh-actions">
+    <div class="sheet-bar"></div>
+    <div class="sheet-head"><h3>Ubah Pesanan</h3><button class="sheet-x" onclick="closeSheet()">✕</button></div>
+    <div class="sheet-scroll">
+      <div class="action-list">
+        <div class="action-row" onclick="closeSheet();setTimeout(()=>openSheet('sh-date'),150)">
+          <div class="a-icon ic-date">📅</div>
+          <div class="a-text"><h4>Ubah Tanggal</h4><p>Reschedule atau hold pengiriman</p></div>
+          <span class="a-arrow">›</span>
+        </div>
+        <div class="action-row" onclick="closeSheet();setTimeout(()=>openSheet('sh-addr'),150)">
+          <div class="a-icon ic-addr">📍</div>
+          <div class="a-text"><h4>Ganti Alamat</h4><p>Ubah alamat pengantaran</p></div>
+          <span class="a-arrow">›</span>
+        </div>
+        <div class="action-row" onclick="closeSheet();setTimeout(()=>openSheet('sh-meals'),150)">
+          <div class="a-icon ic-meal">🍽️</div>
+          <div class="a-text"><h4>Request Meals</h4><p>Atur preferensi & pantangan menu</p></div>
+          <span class="a-arrow">›</span>
+        </div>
+        <div class="action-row" onclick="closeSheet();setTimeout(()=>openSheet('sh-slot'),150)">
+          <div class="a-icon ic-slot">⏰</div>
+          <div class="a-text"><h4>Ubah Slot Waktu</h4><p>Pilih Lunch atau Dinner</p></div>
+          <span class="a-arrow">›</span>
+        </div>
+        <div class="action-row" onclick="closeSheet();setTimeout(()=>openSheet('sh-cutlery'),150)">
+          <div class="a-icon ic-cut">🍴</div>
+          <div class="a-text"><h4>Peralatan Makan</h4><p>Sertakan atau tolak sendok/garpu</p></div>
+          <span class="a-arrow">›</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Date -->
+  <div class="sheet" id="sh-date">
+    <div class="sheet-bar"></div>
+    <div class="sheet-head"><h3>Ubah Tanggal</h3><button class="sheet-x" onclick="closeSheet()">✕</button></div>
+    <div class="sheet-scroll">
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:14px">Pilih tanggal pengganti untuk pesanan yang dipilih:</p>
+      <div class="fullcal">
+        <div class="fullcal-nav">
+          <button class="topnav-btn" onclick="calNav(-1)">‹</button>
+          <span id="cal-label">Oktober 2026</span>
+          <button class="topnav-btn" onclick="calNav(1)">›</button>
+        </div>
+        <div class="fullcal-grid" id="fullcal"></div>
+        <div class="cal-legend">
+          <span><i style="background:var(--green-400)"></i>Tersedia</span>
+          <span><i style="background:var(--red-500)"></i>Libur</span>
+          <span><i style="background:var(--orange-500)"></i>Cut-off</span>
+        </div>
+      </div>
+      <label class="disclaimer">
+        <span style="flex-shrink:0;margin-top:1px">
+          <input type="checkbox" id="chk-disc-date" style="width:16px;height:16px;accent-color:var(--green-600)">
+        </span>
+        <p><strong>Saya mengerti</strong> perubahan tanggal diproses sesuai batas waktu cut-off (H-1 pukul 20:00 WIB). Perubahan setelah cut-off berlaku pada jadwal berikutnya.</p>
+      </label>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-primary btn-full" onclick="save('tanggal')">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- Address -->
+  <div class="sheet" id="sh-addr">
+    <div class="sheet-bar"></div>
+    <div class="sheet-head"><h3 id="addr-title">Ganti Alamat</h3><button class="sheet-x" onclick="closeSheet()">✕</button></div>
+    <div class="sheet-scroll">
+      <!-- List view -->
+      <div id="addr-list-view">
+        <div class="addr-card picked" data-a="1" onclick="pickAddr(this)">
+          <div class="addr-top"><span class="badge badge-blue">🏠 Rumah</span><span class="badge badge-green">⭐ Utama</span></div>
+          <div class="addr-text">Jl. Menteng Raya No. 12, RT 005/RW 003, Kel. Menteng</div>
+          <div class="addr-detail">Jakarta Pusat 10310 • Dekat Taman Suropati</div>
+          <div class="addr-actions">
+            <button onclick="event.stopPropagation();toast('Alamat diedit')">✏️ Edit</button>
+            <button class="del" onclick="event.stopPropagation();toast('Alamat utama tidak bisa dihapus','error')">🗑 Hapus</button>
+          </div>
+        </div>
+        <div class="addr-card" data-a="2" onclick="pickAddr(this)">
+          <div class="addr-top"><span class="badge badge-purple">🏢 Kantor</span></div>
+          <div class="addr-text">Jl. Sudirman No. 45, Lt. 12, Wisma 46</div>
+          <div class="addr-detail">Jakarta Selatan 12190 • Lobby utama kiri</div>
+          <div class="addr-actions">
+            <button onclick="event.stopPropagation();toast('Alamat diedit')">✏️ Edit</button>
+            <button onclick="event.stopPropagation();toast('Dijadikan alamat utama')">⭐ Utama</button>
+            <button class="del" onclick="event.stopPropagation();toast('Alamat dihapus')">🗑 Hapus</button>
+          </div>
+        </div>
+        <div class="addr-card" data-a="3" onclick="pickAddr(this)">
+          <div class="addr-top"><span class="badge badge-orange">🏘️ Kost</span></div>
+          <div class="addr-text">Jl. Cikini Raya No. 78, Kost Putri Cikini Blok C-5</div>
+          <div class="addr-detail">Jakarta Pusat 10330 • Samping warung Pak Eko</div>
+          <div class="addr-actions">
+            <button onclick="event.stopPropagation();toast('Alamat diedit')">✏️ Edit</button>
+            <button onclick="event.stopPropagation();toast('Dijadikan alamat utama')">⭐ Utama</button>
+            <button class="del" onclick="event.stopPropagation();toast('Alamat dihapus')">🗑 Hapus</button>
+          </div>
+        </div>
+        <button class="btn-add-addr" onclick="showAddrForm()">＋ Tambah Alamat Baru</button>
+        <label class="disclaimer" style="margin-top:12px">
+          <span style="flex-shrink:0;margin-top:1px"><input type="checkbox" style="width:16px;height:16px;accent-color:var(--green-600)"></span>
+          <p><strong>Saya menyetujui</strong> perubahan alamat berlaku mulai pengiriman berikutnya sesuai jadwal cut-off (H-1 pukul 20:00 WIB).</p>
+        </label>
+      </div>
+      <!-- Add form -->
+      <div id="addr-form-view" class="hide">
+        <div class="addr-form">
+          <div class="map-box" onclick="toast('Pinpoint lokasi dipilih')">
+            <span style="font-size:24px">📍</span>
+            <span>Tap untuk pilih lokasi</span>
+          </div>
+          <div>
+            <div class="field-label">Label Alamat</div>
+            <div class="label-pills">
+              <button class="label-pill active" onclick="pickLabel(this)">🏠 Rumah</button>
+              <button class="label-pill" onclick="pickLabel(this)">🏢 Kantor</button>
+              <button class="label-pill" onclick="pickLabel(this)">🏘️ Kost</button>
+              <button class="label-pill" onclick="pickLabel(this)">📍 Lainnya</button>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label class="field-label">Alamat Lengkap</label>
+            <textarea class="field-textarea" placeholder="Contoh: Jl. Menteng Raya No. 12, RT 005/RW 003"></textarea>
+          </div>
+          <div class="two-col">
+            <div class="field" style="margin-bottom:0"><label class="field-label">Kelurahan</label><input class="field-input" placeholder="Kelurahan"></div>
+            <div class="field" style="margin-bottom:0"><label class="field-label">Kode Pos</label><input class="field-input" placeholder="Kode Pos"></div>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label class="field-label">Detail & Patokan</label>
+            <textarea class="field-textarea" placeholder="Contoh: Dekat Taman Suropati, pagar hitam"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-primary btn-full" id="btn-save-addr" onclick="save('alamat')">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- Request Meals -->
+  <div class="sheet" id="sh-meals">
+    <div class="sheet-bar"></div>
+    <div class="sheet-head"><h3>Request Meals</h3><button class="sheet-x" onclick="closeSheet()">✕</button></div>
+    <div class="sheet-scroll">
+      <div class="meal-sec">
+        <div class="meal-sec-head"><span class="ico">🥩</span><h4>Protein</h4><span class="quota" data-g="protein">Max 2</span></div>
+        <div class="meal-pills" data-group="protein" data-max="2">
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Sapi Replace Ikan</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Sapi Replace Ayam</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Ikan Replace Ayam</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Protein Ayam Only</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Ikan Replace Beef (20.000/meals)</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Ayam Replace Ikan (Add on 10.000/meals)</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Ayam Replace Beef (20.000/meals)</button>
+        </div>
+      </div>
+      <div class="meal-sec">
+        <div class="meal-sec-head"><span class="ico">🍚</span><h4>Carbs</h4><span class="quota" data-g="carbs">Max 2</span></div>
+        <div class="meal-pills" data-group="carbs" data-max="2">
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Carbo (Replace Vegetable)</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Nasi (Replace Vegetables)</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Jika Menu Mie Hanya Mie Gluten Free</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Vermicelli / Rice Noodle</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Tepung (Termasuk Mie, Pasta dan Mie Gluten Free)</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Kentang</button>
+        </div>
+      </div>
+      <div class="meal-sec">
+        <div class="meal-sec-head"><span class="ico">🥬</span><h4>Vegetables</h4><span class="quota" data-g="vegetables">Max 2</span></div>
+        <div class="meal-pills" data-group="vegetables" data-max="2">
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Bayam</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Brokoli</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Buncis</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Bunga Pepaya</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Daun Bawang & Sledri</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Daun Pepaya</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Daun Singkong</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Jagung</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Jamur</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Kacang Panjang</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Kailan</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Kangkung</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Kembang Kol</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Kol</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Labu Siam</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Lettuce</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Pakcoy</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Sawi Hijau / Sawi Putih</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Tauge</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Wortel</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Zuchini / Timun</button>
+        </div>
+      </div>
+      <div class="meal-sec">
+        <div class="meal-sec-head"><span class="ico">🧂</span><h4>Additional Request</h4><span class="quota" data-g="additional">Max 1</span></div>
+        <div class="meal-pills" data-group="additional" data-max="1">
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Pedas</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Pedas Tapi Minta Sambal Pisah</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Dairy</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Santan</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Soy Product</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Kuning Telur</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Seafood</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Garam</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Gula</button>
+          <button class="meal-pill" onclick="toggleMeal(this)"><span class="dot">✓</span>Tanpa Lapisan ( Bread Cumbs on Protein )</button>
+        </div>
+      </div>
+      <label class="disclaimer">
+        <span style="flex-shrink:0;margin-top:1px"><input type="checkbox" style="width:16px;height:16px;accent-color:var(--green-600)"></span>
+        <p><strong>Saya mengerti</strong> perubahan menu berlaku sebelum cut-off dapur (H-1 pukul 20:00 WIB). Perubahan setelah batas waktu tidak dapat diproses.</p>
+      </label>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-primary btn-full" onclick="save('request meals')">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- Time Slot -->
+  <div class="sheet" id="sh-slot">
+    <div class="sheet-bar"></div>
+    <div class="sheet-head"><h3>Ubah Slot Waktu</h3><button class="sheet-x" onclick="closeSheet()">✕</button></div>
+    <div class="sheet-scroll">
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:14px">Pilih waktu pengiriman:</p>
+      <div class="slot-grid">
+        <div class="slot-card on" onclick="pickSlot(this, 'lunch')">
+          <div class="slot-ico">☀️</div><h4>Lunch</h4><p>10:00 – 12:00</p>
+        </div>
+        <div class="slot-card" onclick="pickSlot(this, 'dinner')">
+          <div class="slot-ico">🌙</div><h4>Dinner</h4><p>16:00 – 18:00</p>
+          <p style="font-size: 11px; color: var(--orange-500); margin-top: 6px;">*Khusus Area Jakarta</p>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-primary btn-full" onclick="save('slot waktu')">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- Cutlery -->
+  <div class="sheet" id="sh-cutlery">
+    <div class="sheet-bar"></div>
+    <div class="sheet-head"><h3>Peralatan Makan</h3><button class="sheet-x" onclick="closeSheet()">✕</button></div>
+    <div class="sheet-scroll">
+      <div class="toggle-row" style="padding:20px 0">
+        <div class="toggle-row-info">
+          <h4>🍴 Sendok & Garpu</h4>
+          <p>Sertakan peralatan makan sekali pakai</p>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" checked>
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <div style="padding:14px;background:var(--green-50);border-radius:var(--radius-sm);font-size:12px;color:var(--green-800);line-height:1.6">
+        💡 <strong>Tips:</strong> Dengan menolak peralatan makan sekali pakai, Anda membantu mengurangi sampah plastik. Terima kasih!
+      </div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-primary btn-full" onclick="save('peralatan makan')">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- Weekly Menu -->
+  <div class="sheet" id="sh-menu">
+    <div class="sheet-bar"></div>
+    <div class="sheet-head"><h3>Menu Mingguan</h3><button class="sheet-x" onclick="closeSheet()">✕</button></div>
+    <div class="sheet-scroll">
+      <div class="menu-tabs" id="menu-tabs"></div>
+      <div id="menu-content"></div>
+    </div>
+  </div>
+
+  <!-- Audit -->
+  <div class="sheet" id="sh-audit">
+    <div class="sheet-bar"></div>
+    <div class="sheet-head"><h3>Riwayat Perubahan</h3><button class="sheet-x" onclick="closeSheet()">✕</button></div>
+    <div class="sheet-scroll">
+      <div class="audit-item"><div class="audit-dot"></div><div class="audit-body"><div class="audit-title">Reschedule pengiriman <span class="badge badge-green">Customer</span></div><div class="audit-desc">30 Sep → 3 Okt 2026 (Lunch)</div><div class="audit-time">29 Sep 2026, 10:30</div></div></div>
+      <div class="audit-item"><div class="audit-dot"></div><div class="audit-body"><div class="audit-title">Ubah alamat <span class="badge badge-green">Customer</span></div><div class="audit-desc">Rumah → Kantor</div><div class="audit-time">28 Sep 2026, 14:15</div></div></div>
+      <div class="audit-item"><div class="audit-dot admin"></div><div class="audit-body"><div class="audit-title">Request meals <span class="badge badge-purple">Admin</span></div><div class="audit-desc">Tanpa Cumi/Udang, Extra Karbo</div><div class="audit-time">27 Sep 2026, 09:00</div></div></div>
+      <div class="audit-item"><div class="audit-dot"></div><div class="audit-body"><div class="audit-title">Ubah slot waktu <span class="badge badge-green">Customer</span></div><div class="audit-desc">Dinner → Lunch (2 Okt)</div><div class="audit-time">26 Sep 2026, 16:45</div></div></div>
+      <div class="audit-item"><div class="audit-dot admin"></div><div class="audit-body"><div class="audit-title">Pembayaran dikonfirmasi <span class="badge badge-purple">Admin</span></div><div class="audit-desc">Rp 2.400.000</div><div class="audit-time">20 Sep 2026, 11:20</div></div></div>
+      <div class="audit-item"><div class="audit-dot"></div><div class="audit-body"><div class="audit-title">Hold pengiriman <span class="badge badge-green">Customer</span></div><div class="audit-desc">5 Okt 2026 (Dinner)</div><div class="audit-time">19 Sep 2026, 08:30</div></div></div>
+    </div>
+  </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ============================================
+   BELLYWELL — Application Logic (Simplified)
+   ============================================ */
+let sbClient = null;
+if (window.supabase) {
+  sbClient = window.supabase.createClient(
+    'https://jhiczetiklushxvmforb.supabase.co',
+    'sb_publishable_lRkfbX0LAcMO8kD1yiUbKg__e5muxBN'
+  );
+} else {
+  console.error('Supabase SDK tidak termuat!');
+}
+
+
+// ---- Data ----
+let currentUser = null;
+let orders = [];
+
+const menus = [
+  { day:'Sen, 29 Sep',
+    lunch:[{e:'🍗',n:'Ayam Panggang Madu',c:'320 kkal • Protein 28g'},{e:'🍚',n:'Nasi Merah',c:'180 kkal • Karbo 38g'},{e:'🥗',n:'Salad Sayur Segar',c:'85 kkal • Serat 4g'}],
+    dinner:[{e:'🐟',n:'Salmon Teriyaki',c:'290 kkal • Protein 32g'},{e:'🥦',n:'Brokoli Wortel Kukus',c:'65 kkal • Serat 5g'},{e:'🍲',n:'Sup Jagung Manis',c:'120 kkal • Karbo 18g'}]},
+  { day:'Sel, 30 Sep',
+    lunch:[{e:'🥩',n:'Daging Lada Hitam',c:'340 kkal • Protein 30g'},{e:'🍠',n:'Ubi Panggang',c:'150 kkal • Karbo 32g'},{e:'🥒',n:'Timun & Selada',c:'45 kkal • Serat 3g'}],
+    dinner:[{e:'🍳',n:'Omelette Sayuran',c:'220 kkal • Protein 18g'},{e:'🥑',n:'Avocado Bowl',c:'180 kkal • Lemak 14g'},{e:'🍵',n:'Sup Tofu Miso',c:'90 kkal • Protein 8g'}]},
+  { day:'Rab, 1 Okt',
+    lunch:[{e:'🍤',n:'Udang Saus Padang',c:'280 kkal • Protein 25g'},{e:'🍚',n:'Nasi Putih',c:'200 kkal • Karbo 42g'},{e:'🥬',n:'Tumis Kangkung',c:'70 kkal • Serat 4g'}],
+    dinner:[{e:'🍖',n:'Ayam Bakar Kecap',c:'310 kkal • Protein 26g'},{e:'🌽',n:'Jagung Rebus',c:'95 kkal • Karbo 20g'},{e:'🥗',n:'Gado-gado Mini',c:'150 kkal • Serat 6g'}]},
+  { day:'Kam, 2 Okt',
+    lunch:[{e:'🐟',n:'Kakap Bumbu Kuning',c:'260 kkal • Protein 28g'},{e:'🍚',n:'Nasi Merah',c:'180 kkal • Karbo 38g'},{e:'🥕',n:'Sayur Asem',c:'80 kkal • Serat 5g'}],
+    dinner:[{e:'🥚',n:'Telur Balado',c:'190 kkal • Protein 14g'},{e:'🥦',n:'Cap Cay Goreng',c:'130 kkal • Serat 4g'},{e:'🍲',n:'Sup Ayam Jahe',c:'110 kkal • Protein 12g'}]},
+  { day:'Jum, 3 Okt',
+    lunch:[{e:'🍗',n:'Chicken Katsu',c:'350 kkal • Protein 24g'},{e:'🥗',n:'Coleslaw Segar',c:'75 kkal • Serat 3g'},{e:'🍠',n:'Sweet Potato Mash',c:'140 kkal • Karbo 30g'}],
+    dinner:[{e:'🐟',n:'Pepes Tuna',c:'240 kkal • Protein 30g'},{e:'🥬',n:'Lalapan Segar',c:'35 kkal • Serat 3g'},{e:'🍵',n:'Sayur Bening Bayam',c:'60 kkal • Serat 4g'}]}
+];
+
+// ---- State ----
+let sel = new Set();
+let fil = { status:'all', meal:'all' };
+let calM = 9, calY = 2026, calPick = null;
+let addrForm = false;
+
+// ---- Init ----
+document.addEventListener('DOMContentLoaded', () => {
+  renderCal();
+  renderOrders();
+  renderFullCal();
+  renderMenuTabs();
+});
+
+// ---- Navigation ----
+function go(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  window.scrollTo(0,0);
+  if (id === 'pg-edit') updateBar();
+}
+
+async function loadCustomerData(user) {
+  // Update header and profile
+  document.getElementById('dash-avatar').textContent = user.name.charAt(0).toUpperCase();
+  document.getElementById('dash-name').textContent = `Halo, ${user.name.split(' ')[0]}! 👋`;
+  
+  document.getElementById('prof-avatar').textContent = user.name.charAt(0).toUpperCase();
+  document.getElementById('prof-name').textContent = user.name;
+  document.getElementById('prof-fullname').textContent = user.name;
+  document.getElementById('prof-phone').textContent = user.phone || '-';
+  document.getElementById('prof-addr').textContent = user.address || '-';
+  
+  // Fetch orders from Supabase
+  document.getElementById('pkg-title').textContent = 'Memuat data...';
+  
+  const { data: rawOrders, error } = await sbClient.from('orders').select('*').eq('customer_id', user.id).order('date', { ascending: true });
+  if (error) {
+    console.error(error);
+    return toast('Gagal memuat pesanan', 'error');
+  }
+  
+  // Format orders for Customer Portal
+  orders = []; // clear existing
+  rawOrders.forEach(ro => {
+    const lunchQty = parseInt(ro.lunch, 10) || 0;
+    const dinnerQty = parseInt(ro.dinner, 10) || 0;
+    
+    if (lunchQty > 0) {
+      orders.push({
+        id: ro.id + '_l',
+        date: ro.date,
+        meal: 'lunch',
+        qty: lunchQty,
+        status: ro.status,
+        addr: 'Rumah',
+        kloter: '-',
+        cutlery: ro.cutlery || false,
+        raw: ro
+      });
+    }
+    if (dinnerQty > 0) {
+      orders.push({
+        id: ro.id + '_d',
+        date: ro.date,
+        meal: 'dinner',
+        qty: dinnerQty,
+        status: ro.status,
+        addr: 'Rumah',
+        kloter: '-',
+        cutlery: ro.cutlery || false,
+        raw: ro
+      });
+    }
+  });
+  
+  // Calculate stats
+  let total = 0, delivered = 0, hold = 0;
+  orders.forEach(o => {
+    total += o.qty;
+    if (o.status === 'delivered') delivered += o.qty;
+    if (o.status === 'unscheduled') hold += o.qty;
+  });
+  const pending = total - delivered - hold;
+  
+  const pct = total === 0 ? 0 : Math.round((delivered / total) * 100);
+  
+  const category = rawOrders.length > 0 ? rawOrders[0].category : 'Belum Ada Paket';
+  let mealsStr = [];
+  if (orders.some(o => o.meal === 'lunch')) mealsStr.push('Lunch');
+  if (orders.some(o => o.meal === 'dinner')) mealsStr.push('Dinner');
+  const mealInfo = mealsStr.length > 0 ? '🌿 ' + mealsStr.join(' & ') : '';
+  
+  // Update package UI
+  document.getElementById('pkg-title').textContent = `Paket ${category}`;
+  document.getElementById('pkg-meals').textContent = mealInfo;
+  document.getElementById('pkg-status').textContent = total > 0 ? '● Aktif' : '● Kosong';
+  document.getElementById('pkg-bar').style.width = pct + '%';
+  document.getElementById('pkg-pct').textContent = `${delivered}/${total} (${pct}%)`;
+  document.getElementById('pkg-delivered').textContent = delivered;
+  document.getElementById('pkg-pending').textContent = pending;
+  document.getElementById('pkg-hold').textContent = hold;
+  
+  // Find next delivery
+  const nextOrder = orders.find(o => o.status === 'pending');
+  const dashNext = document.getElementById('dash-next-delivery');
+  if (nextOrder) {
+    const d = new Date(nextOrder.date + 'T00:00:00');
+    const dn = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()];
+    const m = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][d.getMonth()];
+    const dateStr = `${dn}, ${d.getDate()} ${m} ${d.getFullYear()}`;
+    const qtyText = nextOrder.qty > 1 ? `${nextOrder.qty} ` : '';
+    const mealIcon = nextOrder.meal === 'lunch' ? '☀️' : '🌙';
+    dashNext.innerHTML = `
+      <div class="card" style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:28px">${mealIcon}</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:600;color:var(--gray-900)">${dateStr}</div>
+          <div style="font-size:12px;color:var(--gray-500)">${qtyText}${nextOrder.meal === 'lunch' ? 'Lunch' : 'Dinner'} • ${nextOrder.raw.category} • ${user.kota || 'Rumah'}</div>
+        </div>
+        <span class="badge badge-orange">Belum Kirim</span>
+      </div>`;
+  } else {
+    dashNext.innerHTML = `
+      <div class="card" style="display:flex;align-items:center;gap:12px">
+        <div style="flex:1;text-align:center;padding:20px;color:var(--gray-500)">Tidak ada pengiriman berikutnya</div>
+      </div>`;
+  }
+  
+  // History UI
+  const dashHistory = document.getElementById('dash-history-list');
+  let hHTML = '';
+  if (total > 0) {
+    hHTML += `
+        <div class="history-item">
+          <div class="history-dot badge-green" style="background:var(--green-100);color:var(--green-700)">${pending === 0 ? '✓' : '●'}</div>
+          <div class="info"><div class="name">Paket ${category}</div><div class="date">${orders[0].date} – ${orders[orders.length-1].date}</div></div>
+          <span class="badge badge-${pending === 0 ? 'green' : 'orange'}">${pending === 0 ? 'Selesai' : 'Aktif'}</span>
+        </div>`;
+  }
+  dashHistory.innerHTML = hHTML || '<div style="text-align:center;padding:20px;color:var(--gray-500);font-size:14px">Belum ada riwayat</div>';
+  
+  renderCal();
+  renderOrders();
+}
+
+// ---- Login ----
+async function doLogin() {
+  const btn = document.getElementById('btn-login');
+  const u = document.getElementById('inp-user').value.trim();
+  const p = document.getElementById('inp-pass').value.trim();
+  if (!u || !p) return toast('Mohon isi username dan password','error');
+  
+  btn.innerHTML = '<div class="spinner"></div> Memproses...';
+  btn.disabled = true;
+  
+  if (!sbClient) {
+    toast('Gagal memuat sistem login (Supabase error)', 'error');
+    btn.innerHTML = 'Masuk';
+    btn.disabled = false;
+    return;
+  }
+  
+  try {
+    const { data, error } = await sbClient.from('customers').select('*').eq('username', u).eq('password', p).single();
+    
+    if (error || !data) {
+      toast('Username atau password salah', 'error');
+      btn.innerHTML = 'Masuk';
+      btn.disabled = false;
+      return;
+    }
+    
+    // Login berhasil
+    currentUser = data;
+    btn.innerHTML = 'Masuk';
+    btn.disabled = false;
+    toast(`Selamat datang, ${data.name.split(' ')[0]}! 👋`);
+    
+    await loadCustomerData(data);
+    go('pg-dash');
+  } catch (err) {
+    console.error(err);
+    toast('Gagal terhubung ke database', 'error');
+    btn.innerHTML = 'Masuk';
+    btn.disabled = false;
+  }
+}
+function togglePw() {
+  const i = document.getElementById('inp-pass');
+  const b = document.getElementById('btn-eye');
+  if (i.type === 'password') { i.type = 'text'; b.textContent = '🔒'; }
+  else { i.type = 'password'; b.textContent = '👁'; }
+}
+document.getElementById('inp-pass')?.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+// ---- Dashboard Tabs ----
+function switchDashTab(el) {
+  document.querySelectorAll('#dash-tabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const target = el.dataset.tab;
+  ['dash-ongoing','dash-history'].forEach(id => {
+    document.getElementById(id)?.classList.toggle('hide', id !== target);
+  });
+}
+
+// ---- Filters ----
+function setFil(chip, type) {
+  chip.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  fil[type] = chip.dataset.f;
+  renderOrders();
+}
+
+// ---- Mini Calendar ----
+function renderCal() {
+  const c = document.getElementById('mini-cal');
+  if (!c) return;
+  const dn = ['MIN','SEN','SEL','RAB','KAM','JUM','SAB'];
+  const start = new Date(2026,8,28);
+  const today = new Date(2026,8,29);
+  c.innerHTML = '';
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(start); d.setDate(start.getDate()+i);
+    const ds = fmt(d);
+    const hasL = orders.some(o => o.date===ds && o.meal==='lunch');
+    const hasD = orders.some(o => o.date===ds && o.meal==='dinner');
+    const isToday = d.toDateString() === today.toDateString();
+    const isSun = d.getDay()===0 && !hasL && !hasD;
+    let cls = 'cal-cell';
+    if (isToday) cls += ' today active';
+    if (isSun) cls += ' off';
+    let dot = '';
+    if (hasL) dot = '<span class="dot lunch"></span>';
+    else if (hasD) dot = '<span class="dot dinner"></span>';
+    c.innerHTML += `<div class="${cls}" onclick="pickCal(this)"><span class="dn">${dn[d.getDay()]}</span><span class="dd">${d.getDate()}</span>${dot}</div>`;
+  }
+}
+function pickCal(el) {
+  document.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ---- Order List ----
+function renderOrders() {
+  const c = document.getElementById('order-items');
+  if (!c) return;
+  const list = orders.filter(o => {
+    if (fil.status !== 'all' && o.status !== fil.status) return false;
+    if (fil.meal !== 'all' && o.meal !== fil.meal) return false;
+    return true;
+  });
+  c.innerHTML = list.map(o => {
+    const on = sel.has(o.id);
+    const dt = new Date(o.date+'T00:00:00');
+    const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+    const mons = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const dateStr = `${days[dt.getDay()]}, ${dt.getDate()} ${mons[dt.getMonth()]}`;
+    const qtyText = o.qty > 1 ? `${o.qty} ` : '';
+    const mealBadge = o.meal==='lunch' ? `<span class="badge badge-blue">☀️ ${qtyText}Lunch</span>` : `<span class="badge badge-orange">🌙 ${qtyText}Dinner</span>`;
+    const statBadge = o.status==='delivered' ? '<span class="badge badge-green">✓ Terkirim</span>' : o.status==='pending' ? '<span class="badge badge-orange">● Belum Kirim</span>' : '<span class="badge badge-gray">○ Belum Jadwal</span>';
+    return `<div class="order-card${on?' selected':''}" data-id="${o.id}" onclick="toggleItem('${o.id}',this)">
+      <label class="checkbox cb" onclick="event.stopPropagation()"><input type="checkbox" ${on?'checked':''} onchange="toggleItem('${o.id}',this.closest('.order-card'))"><span class="checkbox-box">✓</span></label>
+      <div class="body">
+        <div class="top-row"><span class="date-text">${dateStr}</span><div class="tags">${mealBadge}${statBadge}</div></div>
+        <div class="addr">📍 ${o.addr}</div>
+        <div class="meta"><span>📦 ${o.kloter}</span><span>${o.cutlery?'🍴 Cutlery':'❌ No Cutlery'}</span></div>
+      </div></div>`;
+  }).join('');
+  updateBar();
+}
+
+function toggleItem(id, el) {
+  if (sel.has(id)) { sel.delete(id); el.classList.remove('selected'); }
+  else { sel.add(id); el.classList.add('selected'); }
+  const cb = el.querySelector('input[type="checkbox"]');
+  if (cb) cb.checked = sel.has(id);
+  syncAll();
+  updateBar();
+}
+
+function toggleAll() {
+  const all = document.getElementById('chk-all').checked;
+  document.querySelectorAll('.order-card').forEach(c => {
+    const id = +c.dataset.id;
+    if (all) { sel.add(id); c.classList.add('selected'); }
+    else { sel.delete(id); c.classList.remove('selected'); }
+    const cb = c.querySelector('input[type="checkbox"]');
+    if (cb) cb.checked = all;
+  });
+  updateBar();
+}
+
+function syncAll() {
+  const total = document.querySelectorAll('.order-card').length;
+  const ca = document.getElementById('chk-all');
+  if (ca) ca.checked = sel.size === total && total > 0;
+}
+
+function updateBar() {
+  const bar = document.getElementById('bot-bar');
+  const cnt = document.getElementById('sel-count');
+  if (cnt) cnt.textContent = `${sel.size} dipilih`;
+  if (bar) bar.classList.toggle('hide', sel.size === 0);
+}
+
+// ---- Sheets ----
+function openSheet(id) {
+  document.getElementById('overlay')?.classList.add('show');
+  document.getElementById(id)?.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeSheet() {
+  document.getElementById('overlay')?.classList.remove('show');
+  document.querySelectorAll('.sheet').forEach(s => s.classList.remove('show'));
+  document.body.style.overflow = '';
+  if (addrForm) hideAddrForm();
+}
+
+// Swipe to dismiss
+document.querySelectorAll('.sheet-bar').forEach(bar => {
+  let y0 = 0;
+  bar.addEventListener('touchstart', e => y0 = e.touches[0].clientY, {passive:true});
+  bar.addEventListener('touchmove', e => { if (e.touches[0].clientY - y0 > 60) closeSheet(); }, {passive:true});
+});
+
+// ---- Full Calendar ----
+function renderFullCal() {
+  const g = document.getElementById('fullcal');
+  const l = document.getElementById('cal-label');
+  if (!g || !l) return;
+  const mns = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const dls = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+  l.textContent = `${mns[calM]} ${calY}`;
+  const fd = new Date(calY,calM,1).getDay();
+  const dim = new Date(calY,calM+1,0).getDate();
+  const today = new Date(2026,8,29);
+  g.innerHTML = dls.map(d => `<div class="fc-label">${d}</div>`).join('');
+  for (let i = 0; i < fd; i++) g.innerHTML += '<div class="fc-day off"></div>';
+  for (let d = 1; d <= dim; d++) {
+    const dt = new Date(calY,calM,d);
+    const past = dt < today;
+    const sun = dt.getDay() === 0;
+    const isTd = dt.toDateString() === today.toDateString();
+    let cls = 'fc-day';
+    if (isTd) cls += ' today';
+    if (past || sun) cls += ' off';
+    if (sun) cls += ' holiday';
+    if (calPick === d) cls += ' picked';
+    g.innerHTML += `<div class="${cls}" onclick="pickFc(${d},this)">${d}</div>`;
+  }
+}
+function pickFc(d, el) {
+  if (el.classList.contains('off')) return;
+  document.querySelectorAll('.fc-day.picked').forEach(e => e.classList.remove('picked'));
+  el.classList.add('picked');
+  calPick = d;
+}
+function calNav(dir) {
+  calM += dir;
+  if (calM > 11) { calM = 0; calY++; }
+  if (calM < 0) { calM = 11; calY--; }
+  calPick = null;
+  renderFullCal();
+}
+
+// ---- Address ----
+function pickAddr(el) {
+  document.querySelectorAll('.addr-card').forEach(c => c.classList.remove('picked'));
+  el.classList.add('picked');
+}
+function showAddrForm() {
+  addrForm = true;
+  document.getElementById('addr-list-view')?.classList.add('hide');
+  document.getElementById('addr-form-view')?.classList.remove('hide');
+  document.getElementById('addr-title').textContent = 'Tambah Alamat';
+  document.getElementById('btn-save-addr').textContent = 'Simpan Alamat';
+}
+function hideAddrForm() {
+  addrForm = false;
+  document.getElementById('addr-list-view')?.classList.remove('hide');
+  document.getElementById('addr-form-view')?.classList.add('hide');
+  const t = document.getElementById('addr-title');
+  if (t) t.textContent = 'Ganti Alamat';
+  const b = document.getElementById('btn-save-addr');
+  if (b) b.textContent = 'Save Changes';
+}
+function pickLabel(el) {
+  el.parentElement.querySelectorAll('.label-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ---- Meals ----
+function toggleMeal(el) {
+  const wrap = el.closest('.meal-pills');
+  const max = +(wrap.dataset.max || 99);
+  const grp = wrap.dataset.group;
+  const selInGrp = wrap.querySelectorAll('.meal-pill.on');
+  if (el.classList.contains('on')) {
+    el.classList.remove('on');
+    updQuota(grp, selInGrp.length - 1, max);
+    updLock(wrap, selInGrp.length - 1, max);
+  } else {
+    if (selInGrp.length >= max) return toast(`Maksimal ${max} pilihan`, 'error');
+    el.classList.add('on');
+    updQuota(grp, selInGrp.length + 1, max);
+    updLock(wrap, selInGrp.length + 1, max);
+  }
+}
+function updQuota(grp, cnt, max) {
+  const q = document.querySelector(`.quota[data-g="${grp}"]`);
+  if (q) { q.textContent = `${cnt}/${max}`; q.classList.toggle('full', cnt >= max); }
+}
+function updLock(wrap, cnt, max) {
+  wrap.querySelectorAll('.meal-pill').forEach(p => {
+    if (!p.classList.contains('on') && cnt >= max) p.classList.add('locked');
+    else p.classList.remove('locked');
+  });
+}
+
+// ---- Slot ----
+function pickSlot(el, type) {
+  if (type === 'dinner') {
+    toast('Slot Dinner khusus untuk pengiriman area Jakarta', 'success');
+  }
+  document.querySelectorAll('.slot-card').forEach(s => s.classList.remove('on'));
+  el.classList.add('on');
+}
+
+// ---- Menu ----
+function renderMenuTabs() {
+  const tabs = document.getElementById('menu-tabs');
+  if (!tabs) return;
+  tabs.innerHTML = menus.map((m,i) => `<button class="menu-tab${i===0?' active':''}" onclick="showMenu(${i},this)">${m.day}</button>`).join('');
+  showMenu(0);
+}
+function showMenu(i, tab) {
+  if (tab) {
+    document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  }
+  const m = menus[i]; if (!m) return;
+  const c = document.getElementById('menu-content');
+  if (!c) return;
+  const renderItems = items => items.map(it => `<div class="menu-row"><span class="emoji">${it.e}</span><div><div class="name">${it.n}</div><div class="cal">${it.c}</div></div></div>`).join('');
+  c.innerHTML = `
+    <div class="menu-block"><span class="menu-block-type lunch">☀️ Lunch</span>${renderItems(m.lunch)}</div>
+    <div class="menu-block"><span class="menu-block-type dinner">🌙 Dinner</span>${renderItems(m.dinner)}</div>`;
+}
+
+// ---- Save ----
+function save(type) {
+  const now = new Date();
+  const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  
+  let blocked = false;
+  for (let id of sel) {
+    const order = orders.find(o => o.id === id);
+    if (!order) continue;
+    
+    const [y, m, d] = order.date.split('-');
+    const orderDate = new Date(y, m - 1, d);
+    
+    const diffDays = Math.round((orderDate - todayDate) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 1) {
+      // Order hari ini / kemarin -> cut-off sudah lewat
+      blocked = true;
+      break;
+    } else if (diffDays === 1) {
+      // Order besok -> cek apakah sudah lewat jam 20:00
+      if (now.getHours() >= 20) {
+        blocked = true;
+        break;
+      }
+    }
+  }
+
+  if (blocked) {
+    closeSheet();
+    return toast('Gagal: Melewati batas cut-off H-1 (20:00 WIB)', 'error');
+  }
+
+  closeSheet();
+  toast(`Perubahan ${type} berhasil disimpan ✓`);
+  sel.clear();
+  renderOrders();
+  syncAll();
+}
+
+// ---- Toast ----
+function toast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  const inner = document.getElementById('toast-inner');
+  const ic = document.getElementById('toast-icon');
+  const m = document.getElementById('toast-msg');
+  if (!t) return;
+  inner.className = 'toast-inner ' + type;
+  ic.textContent = type === 'error' ? '✕' : '✓';
+  m.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ---- Helpers ----
+function fmt(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+</script>
+</body>
+</html>
