@@ -35,9 +35,77 @@ function suggestColor(t) {
   if (/\b(IKAN|SEAFOOD|SAPI|BEEF|AYAM|UDANG|SALMON|TUNA|CUMI)\b/.test(u)) return 'cyan';
   return 'yellow';
 }
-const PRESETS = ['NO PEDAS', 'NO SANTAN', 'NO IKAN', 'NO SEAFOOD', 'NO KUNING TELUR', 'TELUR HARUS MATANG', 'ALL MATANG',
-  'NO SAPI REPLACE AYAM', 'NO SAPI REPLACE IKAN', 'NO NASI PUTIH GANTI NASI MERAH', 'NO KARBO GANTI SAYUR', 'NO KENTANG',
-  'NO TIMUN', 'LESS VEGGIES', 'GLUTEN FREE', 'TANPA GULA', 'TANPA GARAM', 'NO DAIRY', 'SAMBAL PISAH'];
+const PRESET_CATEGORIES = [
+  {
+    id: 'protein',
+    name: '🥩 Protein & Lauk',
+    items: [
+      'NO IKAN',
+      'NO SEAFOOD',
+      'NO SAPI REPLACE AYAM',
+      'NO SAPI REPLACE IKAN',
+      'NO AYAM REPLACE SAPI',
+      'NO KUNING TELUR',
+      'TELUR HARUS MATANG',
+      'ALL MATANG',
+      '- NO BEEF',
+      '- PROTEIN ONLY IKAN & MINCED BEEF',
+      '- PROTEIN 100GR'
+    ]
+  },
+  {
+    id: 'sayuran',
+    name: '🥗 Sayuran & Buah',
+    items: [
+      'LESS VEGGIES',
+      'EXTRA VEGGIES',
+      'NO TIMUN',
+      'NO BEET/BIT',
+      'NO BUNGA PEPAYA',
+      'NO KOL',
+      'NO JAMUR',
+      'NO KACANG',
+      'NO SAYUR'
+    ]
+  },
+  {
+    id: 'karbo',
+    name: '🍚 Karbo & Nasi',
+    items: [
+      'NO NASI PUTIH GANTI NASI MERAH',
+      'NO KARBO GANTI SAYUR',
+      'NO KENTANG',
+      'LESS KARBO',
+      'NO NASI'
+    ]
+  },
+  {
+    id: 'rasa',
+    name: '🌶️ Bumbu & Rasa',
+    items: [
+      'NO PEDAS',
+      'SAMBAL PISAH',
+      'NO SANTAN',
+      'TANPA GULA',
+      'TANPA GARAM',
+      'LESS OIL'
+    ]
+  },
+  {
+    id: 'alergi',
+    name: '🛡️ Alergi & Khusus',
+    items: [
+      'GLUTEN FREE',
+      'NO DAIRY',
+      '- NO TELUR ALERGI',
+      '- NO SEAFOOD - IKAN OK',
+      '- NO AYAM SAMA SEKALI',
+      'ALERGI KACANG',
+      'ALERGI UDANG'
+    ]
+  }
+];
+const PRESETS = PRESET_CATEGORIES.flatMap(c => c.items);
 
 // ---------- Seed data ----------
 function seed() {
@@ -407,7 +475,20 @@ function openOrderModal(id) {
           <input class="inp" id="req-new" placeholder="Ketik request lalu Enter… (contoh: NO PEDAS)" style="text-transform:uppercase" onkeydown="if(event.key==='Enter'){event.preventDefault();addReq(this.value)}">
           <button class="btn btn-ghost" type="button" onclick="addReq($('req-new').value)">Tambah</button>
         </div>
-        <div class="presets">${PRESETS.map(p => `<button type="button" class="preset" onclick="addReq('${p}')">＋ ${p}</button>`).join('')}</div>
+        <div class="preset-filter-bar">
+          <button type="button" class="pf-tab active" onclick="filterPresetCategory('all', this)">Semua</button>
+          ${PRESET_CATEGORIES.map(c => `<button type="button" class="pf-tab" onclick="filterPresetCategory('${c.id}', this)">${c.name}</button>`).join('')}
+        </div>
+        <div class="preset-groups-wrap" id="preset-groups-wrap">
+          ${PRESET_CATEGORIES.map(c => `
+            <div class="preset-group" data-cat="${c.id}">
+              <div class="preset-group-title">${c.name}</div>
+              <div class="presets">
+                ${c.items.map(p => `<button type="button" class="preset" onclick="addReq('${p.replace(/'/g, "\\'")}')">＋ ${p}</button>`).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
         <div class="hint">Warna otomatis disarankan: <b>cyan</b> protein/ikan, <b>merah</b> replace, <b>abu</b> nasi/karbo, <b>kuning</b> lainnya. Klik kotak warna untuk mengganti.</div>
         <div class="req-preview" id="req-preview"></div>
       </div>
@@ -427,6 +508,18 @@ function addReq(t) {
   mReqs.push({ t, c: suggestColor(t) });
   $('req-new').value = '';
   renderReqEditor();
+}
+function filterPresetCategory(catId, btn) {
+  document.querySelectorAll('.pf-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const groups = document.querySelectorAll('.preset-group');
+  groups.forEach(g => {
+    if (catId === 'all' || g.dataset.cat === catId) {
+      g.style.display = 'block';
+    } else {
+      g.style.display = 'none';
+    }
+  });
 }
 function renderReqEditor() {
   $('req-list').innerHTML = mReqs.map((r, i) => `
