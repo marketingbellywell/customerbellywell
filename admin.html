@@ -16,11 +16,11 @@
     <h2 style="margin:0 0 20px;color:#064e3b;">Admin Panel</h2>
     <div style="text-align:left;margin-bottom:15px;">
       <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#475569;">Username</label>
-      <input id="admin-user" type="text" style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:8px;font-size:15px;" placeholder="admin">
+      <input id="admin-user" type="text" style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:8px;font-size:15px;" placeholder="Masukkan username">
     </div>
     <div style="text-align:left;margin-bottom:24px;">
       <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#475569;">Password</label>
-      <input id="admin-pass" type="password" style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:8px;font-size:15px;" placeholder="admin123" onkeydown="if(event.key==='Enter') doAdminLogin()">
+      <input id="admin-pass" type="password" style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:8px;font-size:15px;" placeholder="Masukkan password" onkeydown="if(event.key==='Enter') doAdminLogin()">
     </div>
     <button onclick="doAdminLogin()" style="width:100%;padding:14px;background:#16a34a;color:white;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.2s;">Masuk</button>
     <a href="index.html" style="display:block;margin-top:20px;font-size:14px;color:#16a34a;text-decoration:none;">← Ke Portal Customer</a>
@@ -37,6 +37,7 @@
     if (u === 'admin' && p === 'admin123') {
       sessionStorage.setItem('bw_admin_logged', '1');
       document.getElementById('admin-login-overlay').style.display = 'none';
+      document.getElementById('admin-user').value = '';
       document.getElementById('admin-pass').value = '';
     } else {
       alert('Username atau password salah! (Coba: admin / admin123)');
@@ -44,6 +45,8 @@
   }
   function doAdminLogout() {
     sessionStorage.removeItem('bw_admin_logged');
+    document.getElementById('admin-user').value = '';
+    document.getElementById('admin-pass').value = '';
     document.getElementById('admin-login-overlay').style.display = 'flex';
   }
 </script>
