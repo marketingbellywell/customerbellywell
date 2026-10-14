@@ -39,14 +39,14 @@
           <label class="field-label" for="inp-user">Username</label>
           <div class="field-icon-wrap">
             <span class="icon-left">👤</span>
-            <input class="field-input" id="inp-user" placeholder="Masukkan username" value="sarah.wellness" autocomplete="username">
+            <input class="field-input" id="inp-user" placeholder="Masukkan username" autocomplete="username">
           </div>
         </div>
         <div class="field">
           <label class="field-label" for="inp-pass">Password</label>
           <div class="field-icon-wrap">
             <span class="icon-left">🔒</span>
-            <input class="field-input" id="inp-pass" type="password" placeholder="Masukkan password" value="password123" autocomplete="current-password">
+            <input class="field-input" id="inp-pass" type="password" placeholder="Masukkan password" autocomplete="current-password">
             <button class="icon-right" id="btn-eye" onclick="togglePw()">👁</button>
           </div>
         </div>
@@ -218,7 +218,7 @@
         <div class="profile-row"><div class="pr-icon">📍</div><div><div class="pr-label">Alamat Utama</div><div class="pr-value" id="prof-addr">Rumah</div></div></div>
       </div>
       <div class="section">
-        <button class="btn btn-danger btn-full" onclick="go('pg-login');toast('Anda telah keluar')">Keluar dari Akun</button>
+        <button class="btn btn-danger btn-full" onclick="doLogout()">Keluar dari Akun</button>
       </div>
     </div>
   </div>
@@ -744,6 +744,15 @@ async function doLogin() {
     btn.innerHTML = 'Masuk';
     btn.disabled = false;
   }
+}
+function doLogout() {
+  currentUser = null;
+  const u = document.getElementById('inp-user');
+  const p = document.getElementById('inp-pass');
+  if (u) u.value = '';
+  if (p) p.value = '';
+  go('pg-login');
+  toast('Anda telah keluar');
 }
 function togglePw() {
   const i = document.getElementById('inp-pass');

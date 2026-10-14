@@ -113,6 +113,15 @@ async function doLogin() {
     btn.disabled = false;
   }
 }
+function doLogout() {
+  currentUser = null;
+  const u = document.getElementById('inp-user');
+  const p = document.getElementById('inp-pass');
+  if (u) u.value = '';
+  if (p) p.value = '';
+  go('pg-login');
+  toast('Anda telah keluar');
+}
 function togglePw() {
   const i = document.getElementById('inp-pass');
   const b = document.getElementById('btn-eye');
