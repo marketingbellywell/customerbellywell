@@ -513,15 +513,43 @@ function expandBoxes(orders, meal = 'all') {
   return out.sort((a, b) => (a.meal === b.meal ? 0 : a.meal === 'lunch' ? -1 : 1) || a.c.name.localeCompare(b.c.name));
 }
 
+function renderRequestsHTML(requests, cutlery) {
+  const items = [];
+  if (requests && requests.length) {
+    requests.forEach(r => {
+      const text = (r.t || '').trim();
+      const textLines = text.split('\n').map(s => s.trim()).filter(Boolean);
+      textLines.forEach(tl => {
+        items.push({ t: tl, c: r.c || 'yellow' });
+      });
+    });
+  }
+  if (cutlery) {
+    items.push({ t: 'SENDOK GARPU', c: 'yellow' });
+  }
+  if (!items.length) {
+    return '<span class="none">TANPA REQUEST</span>';
+  }
+
+  const hasBullets = items.some(it => it.t.startsWith('-'));
+
+  if (hasBullets) {
+    return items.map(it => `<div class="rq-line"><mark class="${it.c}">${esc(it.t)}</mark></div>`).join('');
+  } else {
+    return items.map((it, idx) => `<mark class="${it.c}">${esc(it.t)}</mark>${idx < items.length - 1 ? ' ' : ''}`).join('');
+  }
+}
+
 function requestLabelHTML({ name, category, meal, requests, cutlery }, copyable = true, copyIdx) {
-  const req = requests.length
-    ? requests.map((r, i) => `<mark class="${r.c}">${esc(r.t)}</mark>${i < requests.length - 1 ? ', ' : ''}`).join('')
-    : '<span class="none">TANPA REQUEST</span>';
+  const cat = (category || '').toUpperCase().replace(/\s+GROWTH/g, '');
+  const m = (meal || '').toUpperCase();
+  const reqHtml = renderRequestsHTML(requests, cutlery);
+
   return `<div class="rlabel">
     ${copyable ? `<button class="copy-btn" onclick="copyRequest(${copyIdx})">📋 Copy</button>` : ''}
     <div class="rn">${esc(name)}</div>
-    <div class="rc">${esc(category)}, ${esc(meal)}</div>
-    <div class="rq">${req}${cutlery ? `${requests.length ? ', ' : ''}<mark class="yellow">SENDOK GARPU</mark>` : ''}</div>
+    <div class="rc">${esc(cat)}, ${esc(m)}</div>
+    <div class="rq">${reqHtml}</div>
   </div>`;
 }
 
@@ -566,7 +594,12 @@ function renderRequest() {
     ? reqBoxes.map((b, i) => requestLabelHTML({ name: b.c.name, category: b.o.category, meal: MEAL_LABEL[b.meal], requests: b.o.requests, cutlery: b.o.cutlery }, true, i)).join('')
     : `<div class="empty" style="grid-column:1/-1"><div class="big">🏷️</div>Tidak ada label request untuk ${fmtLong(state.date)}.</div>`;
 }
-const reqText = b => `${b.c.name.toUpperCase()}\n${b.o.category}, ${MEAL_LABEL[b.meal]}\n${b.o.requests.map(r => r.t).concat(b.o.cutlery ? ['SENDOK GARPU'] : []).join(', ') || '-'}`;
+const reqText = b => {
+  const cat = (b.o.category || '').toUpperCase().replace(/\s+GROWTH/g, '');
+  const meal = (MEAL_LABEL[b.meal] || b.meal).toUpperCase();
+  const reqs = b.o.requests.map(r => r.t).concat(b.o.cutlery ? ['SENDOK GARPU'] : []).join('\n') || '-';
+  return `${b.c.name.toUpperCase()}\n${cat}, ${meal}\n${reqs}`;
+};
 function copyRequest(i) { copyText(reqText(reqBoxes[i]), 'Request disalin ke clipboard'); }
 function copyAllRequests() {
   if (!reqBoxes.length) return toast('Tidak ada data untuk disalin', 'error');
@@ -632,7 +665,31 @@ function printRequest(fromKurir) {
   printJob(buildRequestPrint(boxes));
 }
 function buildRequestPrint(boxes) {
-  return `<div class="p-grid">${boxes.map(b => requestLabelHTML({ name: b.c.name, category: b.o.category, meal: MEAL_LABEL[b.meal], requests: b.o.requests, cutlery: b.o.cutlery }, false)).join('')}</div>`;
+  const pageSize = 12; // 3 kolom x 4 baris per lembar A4
+  const pages = [];
+  for (let i = 0; i < boxes.length; i += pageSize) {
+    pages.push(boxes.slice(i, i + pageSize));
+  }
+  return pages.map(pageBoxes => {
+    const slots = [...pageBoxes];
+    while (slots.length < 12) {
+      slots.push(null);
+    }
+    const htmlSlots = slots.map(b => {
+      if (!b) return `<div class="rlabel empty-slot"></div>`;
+      const cat = (b.o.category || '').toUpperCase().replace(/\s+GROWTH/g, '');
+      const meal = (MEAL_LABEL[b.meal] || b.meal).toUpperCase();
+      return requestLabelHTML({
+        name: b.c.name,
+        category: cat,
+        meal: meal,
+        requests: b.o.requests,
+        cutlery: b.o.cutlery
+      }, false);
+    }).join('');
+
+    return `<div class="p-page-request"><div class="p-grid-request">${htmlSlots}</div></div>`;
+  }).join('');
 }
 
 function printShipping(fromKurir) {
