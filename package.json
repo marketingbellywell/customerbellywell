@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "python -m http.server 3000",
     "start": "python -m http.server 3000",
+    "deploy": "git add . && git commit -m \"Update app from workspace\" && git push origin main",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
